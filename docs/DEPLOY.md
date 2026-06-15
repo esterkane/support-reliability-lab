@@ -35,7 +35,27 @@ to a preview URL plus the passing/failing workflow.
 - Triage domain/SSL tickets with `bash scripts/dns-check.sh <domain>` and the
   `dns-triage` skill.
 
-## Plan notes
-Multi-tenant **preview** URLs are Enterprise-only; ordinary preview deployments are broadly
-available. Log Drains are Pro/Enterprise. Adjustable function memory is dashboard-configurable
-on Pro/Enterprise; Hobby uses defaults. See the local strategy notes for the full list.
+## Running on the Hobby (free) plan
+This project is built to run fully on **Hobby**. What that means in practice:
+
+**Works on Hobby**
+- Production + automatic preview deployments (per branch/PR).
+- Custom domains, including a wildcard `*.example.com` — wildcards require the apex on
+  **Vercel nameservers** so Vercel can issue the cert (a DNS requirement, not a plan gate).
+- Speed Insights and Web Analytics (free tier — limited data points / retention).
+- Every incident in the lab — they're self-contained app logic, no paid features.
+
+**Limited on Hobby**
+- Runtime **log retention is short**; there's no full trace/observability dashboard.
+  For trace inspection use the local OTel stack (`infra/otel/`, `npm run otel:smoke`),
+  not the Vercel dashboard.
+
+**Not available on Hobby (documented, not wired)**
+- **Log Drains** (Pro/Enterprise) — so external APM ingestion from Vercel is out of scope.
+- **Multi-tenant preview URLs** (Enterprise).
+- **Adjustable function memory** (Pro/Enterprise); Hobby uses defaults. Our routes stay
+  within Hobby's function duration limit (the timeout incident aborts at ~2.5s anyway).
+
+**Don't load-test the live Hobby deployment** — it counts against usage and Hobby is for
+non-commercial use. The `performance-smoke` job runs k6 against a **local** production
+build for that reason; keep it that way unless you move to Pro.
