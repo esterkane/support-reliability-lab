@@ -16,6 +16,16 @@ and wildcard DNS, serverless timeouts, cache behavior, and trace-based debugging
 pairs each failure with a customer-facing runbook. It demonstrates building internal
 tooling/scripts and writing durable docs, the two things the role calls out most.
 
+## Screens
+
+| Tenant directory | Serverless timeout (504) |
+|---|---|
+| ![Tenant directory](docs/screenshots/landing.png) | ![504 panel](docs/screenshots/serverless-timeout.png) |
+
+| Incident console | Custom-domain diagnosis |
+|---|---|
+| ![Incident console](docs/screenshots/admin.png) | ![Domain diagnosis](docs/screenshots/invalid-domain.png) |
+
 ## Quick start
 ```bash
 npm install
