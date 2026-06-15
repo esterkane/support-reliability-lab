@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Troubleshooting — what to collect before opening a ticket
+    url: https://github.com/esterkane/support-reliability-lab/blob/main/docs/troubleshooting/what-to-collect.md
+    about: The fastest path to a resolved ticket.
+  - name: Incident playbooks
+    url: https://github.com/esterkane/support-reliability-lab/tree/main/docs/incidents
+    about: Reproduction, evidence path, and fix for each known incident.
