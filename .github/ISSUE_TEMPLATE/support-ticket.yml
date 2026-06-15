@@ -1,0 +1,65 @@
+name: Support ticket
+description: Report a problem with a tenant — the fields below are what resolve it fastest.
+title: "[Support]: "
+labels: ["support"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for filing a ticket. These fields mirror
+        `docs/troubleshooting/what-to-collect.md` — having them up front usually means a
+        one-round-trip resolution.
+  - type: dropdown
+    id: tenant
+    attributes:
+      label: Affected tenant
+      options:
+        - healthy
+        - slow-api
+        - stale-cache
+        - big-upload
+        - missing-trace
+        - broken-domain
+        - other / unknown
+    validations:
+      required: true
+  - type: input
+    id: url
+    attributes:
+      label: URL that failed
+      placeholder: https://support-reliability-lab.vercel.app/s/slow-api
+    validations:
+      required: true
+  - type: input
+    id: when
+    attributes:
+      label: Timestamp + timezone
+      placeholder: 2026-06-15 14:30 UTC
+    validations:
+      required: true
+  - type: input
+    id: request-id
+    attributes:
+      label: Request / trace id (x-vercel-id header)
+  - type: dropdown
+    id: cache
+    attributes:
+      label: x-vercel-cache header
+      options:
+        - "n/a"
+        - HIT
+        - MISS
+        - STALE
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected vs. actual
+      description: What did you expect, and what happened instead?
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Evidence
+      description: Paste `curl -i <url>` output and/or a screenshot.
+      render: shell
