@@ -5,6 +5,11 @@ updates:
     schedule:
       interval: weekly
     open-pull-requests-limit: 5
+    # Auto-PR minor/patch only; majors are handled manually (they're often coupled —
+    # e.g. eslint-config-next + typescript + Next belong to one coordinated migration).
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       # Batch low-risk updates so they don't flood the PR list.
       dev-dependencies:
