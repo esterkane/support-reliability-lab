@@ -10,7 +10,8 @@ import { getSubdomain } from "@/lib/subdomain";
  * exactly what makes "wrong-tenant" bugs subtle and worth a regression test.
  */
 export function middleware(req: NextRequest) {
-  const host = req.headers.get("host");
+  // Header is authoritative behind the platform; fall back to the URL host.
+  const host = req.headers.get("host") ?? req.nextUrl.host;
   const subdomain = getSubdomain(host);
 
   // Root domain (or reserved host) → serve as-is.

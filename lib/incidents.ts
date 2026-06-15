@@ -60,6 +60,7 @@ export const INCIDENTS: Record<IncidentKey, Incident> = {
     symptom: "A request to one host renders another tenant's content.",
     evidencePath: "Middleware routing span, Host header inspection, request ID.",
     status: "guarded",
+    doc: "docs/incidents/wrong-tenant.md",
   },
   "payload-too-large": {
     key: "payload-too-large",
