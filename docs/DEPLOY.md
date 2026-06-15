@@ -38,4 +38,4 @@ to a preview URL plus the passing/failing workflow.
 ## Plan notes
 Multi-tenant **preview** URLs are Enterprise-only; ordinary preview deployments are broadly
 available. Log Drains are Pro/Enterprise. Adjustable function memory is dashboard-configurable
-on Pro/Enterprise; Hobby uses defaults. See `deep-research-report.md` for the full list.
+on Pro/Enterprise; Hobby uses defaults. See the local strategy notes for the full list.

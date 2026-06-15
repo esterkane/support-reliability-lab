@@ -21,3 +21,6 @@ next-env.d.ts
 *.log
 .DS_Store
 *.tsbuildinfo
+
+# personal strategy notes — kept local, never published
+deep-research-report.md

@@ -5,7 +5,7 @@ incident lab**. One deployment serves many tenants via host-based routing; an ad
 console exposes controlled incident toggles so every failure is deterministic,
 reproducible, observable, and documented.
 
-The design follows the portfolio strategy in `deep-research-report.md`: instead of
+The design follows the project's portfolio strategy notes (kept locally): instead of
 five disconnected demos, one polished repo that looks like the place a Vercel support
 engineer reproduces customer escalations and writes the runbook that closes them.
 
@@ -105,4 +105,4 @@ The Claude Code skills in `.claude/skills/` encode steps of this loop:
 - Tenant store is in-memory; Redis/Edge Config is a documented swap point.
 - Real custom domains require Vercel + DNS; the DNS lab works against any domain you own.
 - Plan-sensitive features (multi-tenant preview URLs, drains, adjustable memory) are
-  noted where relevant — see `deep-research-report.md` limitations section.
+  noted where relevant in the strategy notes.

@@ -7,8 +7,8 @@ can demonstrate the full support loop: reproduce → observe → root-cause → 
 regression test → runbook.
 
 Built as a portfolio project for a **Vercel Senior Customer Support Engineer** role.
-See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the design and
-[`deep-research-report.md`](deep-research-report.md) for the strategy it implements.
+See [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) for the design. (The underlying
+strategy notes are kept locally and are not part of this repo.)
 
 ## Why this is relevant to the role
 It exercises the exact terrain of Vercel support tickets — host routing, custom domains
@@ -88,7 +88,7 @@ support loop: `incident-repro`, `trace-debug`, `dns-triage`, `runbook-writer`.
 - Tenant store is in-memory (documented swap point for Redis/Edge Config).
 - External APM (Sentry/Datadog) and log drains are documented, not wired.
 - Some Vercel features are plan-gated (multi-tenant preview URLs, drains, adjustable
-  memory) — noted in `docs/ARCHITECTURE.md` and `deep-research-report.md`.
+  memory) — noted in `docs/ARCHITECTURE.md` and the local strategy notes.
 
 ## Tip: reduce permission prompts
 `.claude/settings.json` ships protective `deny` rules only. To let Claude run the dev
