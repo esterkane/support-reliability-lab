@@ -82,7 +82,8 @@ export const INCIDENTS: Record<IncidentKey, Incident> = {
     title: "Broken trace correlation",
     symptom: "Request log exists but downstream spans are missing.",
     evidencePath: "traceparent propagation, instrumentation.ts, drain output.",
-    status: "documented",
+    status: "implemented",
+    doc: "docs/incidents/broken-trace.md",
   },
 };
 

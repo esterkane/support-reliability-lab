@@ -5,6 +5,11 @@ import { getIncident } from "@/lib/incidents";
 import { getCurrentContent } from "@/lib/content";
 import { getCached, type CacheStatus } from "@/lib/cache";
 import { PAYLOAD_LIMIT_BYTES } from "@/lib/upload";
+import {
+  buildPropagationHeaders,
+  generateTraceparent,
+  parseTraceparent,
+} from "@/lib/trace";
 import { UploadDemo } from "./upload-demo";
 
 // On Vercel this bounds the function; locally we enforce the same tolerance with
@@ -27,12 +32,17 @@ interface UpstreamResult {
 
 async function callUpstream(
   origin: string,
-  { delayMs = 0, fail = 0 }: { delayMs?: number; fail?: number },
+  {
+    delayMs = 0,
+    fail = 0,
+    headers = {},
+  }: { delayMs?: number; fail?: number; headers?: Record<string, string> },
 ): Promise<UpstreamResult> {
   const url = `${origin}/api/upstream?delayMs=${delayMs}&fail=${fail}`;
   const startedAt = performance.now();
   try {
     const res = await fetch(url, {
+      headers,
       signal: AbortSignal.timeout(TOLERANCE_MS),
       cache: "no-store",
     });
@@ -113,6 +123,47 @@ function ContentPanel({ subdomain, buggy }: { subdomain: string; buggy: boolean 
   );
 }
 
+/**
+ * Trace-propagation view. Calls the upstream twice with the same trace id: once
+ * forwarding `traceparent` (span correlates) and once dropping it (span orphaned
+ * — the broken-trace bug). The fix is to restore propagation in instrumentation.
+ */
+async function TracePanel({ origin }: { origin: string }) {
+  const traceparent = generateTraceparent();
+  const { traceId } = parseTraceparent(traceparent)!;
+
+  const [connected, orphaned] = await Promise.all([
+    callUpstream(origin, { headers: buildPropagationHeaders(traceparent, { propagate: true }) }),
+    callUpstream(origin, { headers: buildPropagationHeaders(traceparent, { propagate: false }) }),
+  ]);
+
+  const connBody = connected.body as { traced?: boolean } | null;
+  const orphBody = orphaned.body as { traced?: boolean } | null;
+
+  return (
+    <div className="card">
+      <h3 style={{ marginTop: 0 }}>Downstream trace correlation</h3>
+      <p className="muted">
+        Request trace id <code>{traceId.slice(0, 12)}…</code> — two identical calls,
+        one propagating <code>traceparent</code> and one not.
+      </p>
+      <p>
+        <span className={`badge ${connBody?.traced ? "ok" : "err"}`}>
+          propagated: {connBody?.traced ? "CONNECTED" : "orphaned"}
+        </span>{" "}
+        <span className={`badge ${orphBody?.traced ? "ok" : "err"}`}>
+          dropped: {orphBody?.traced ? "connected" : "ORPHANED"}
+        </span>
+      </p>
+      <p className="muted" style={{ fontSize: "0.85rem" }}>
+        The dropped call reaches the upstream but its span can&apos;t be correlated to
+        this request. Restore propagation in <code>instrumentation.ts</code>
+        (<code>fetch.propagateContextUrls</code>) to fix the evidentiary path.
+      </p>
+    </div>
+  );
+}
+
 export default async function TenantPage({
   params,
 }: {
@@ -124,13 +175,15 @@ export default async function TenantPage({
 
   const incident = getIncident(tenant.incident);
 
+  const h = await headers();
+  const host = h.get("host") ?? "localhost:3000";
+  const proto = host.includes("localhost") ? "http" : "https";
+  const origin = `${proto}://${host}`;
+
   // --- serverless-timeout: drive the upstream past the route tolerance ---
   let timeout: UpstreamResult | null = null;
   if (tenant.incident === "serverless-timeout") {
-    const h = await headers();
-    const host = h.get("host") ?? "localhost:3000";
-    const proto = host.includes("localhost") ? "http" : "https";
-    timeout = await callUpstream(`${proto}://${host}`, { delayMs: 8000 });
+    timeout = await callUpstream(origin, { delayMs: 8000 });
   }
 
   const failed = timeout != null && !timeout.ok;
@@ -164,6 +217,8 @@ export default async function TenantPage({
       {tenant.incident === "payload-too-large" && (
         <UploadDemo limitBytes={PAYLOAD_LIMIT_BYTES} />
       )}
+
+      {tenant.incident === "broken-trace" && <TracePanel origin={origin} />}
 
       <div className="card">
         <h3 style={{ marginTop: 0 }}>Where to look first</h3>

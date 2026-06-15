@@ -29,6 +29,13 @@ Chrome/Firefox resolve `*.localhost` automatically. Otherwise use a Host header:
 curl -i -H "Host: slow-api.localhost:3000" http://127.0.0.1:3000/
 ```
 
+### Deployed on `*.vercel.app`?
+Tenant **subdomain** routing needs a wildcard custom domain. On the default Vercel URL,
+reach tenants by **path** instead: `…vercel.app/s/slow-api`, `/s/stale-cache`,
+`/s/big-upload`, `/s/missing-trace`. The landing page, `/admin`, and the APIs work
+normally. Set `ROOT_DOMAIN` to a wildcard domain you own to enable real subdomain
+routing — see [docs/DEPLOY.md](docs/DEPLOY.md).
+
 ## How it works
 | Piece | File |
 |---|---|
@@ -41,9 +48,10 @@ curl -i -H "Host: slow-api.localhost:3000" http://127.0.0.1:3000/
 | Observability | [`instrumentation.ts`](instrumentation.ts) + Speed Insights |
 
 ## Incident scenarios
-Toggle any incident in `/admin`. Three are fully wired — `serverless-timeout` (504),
-`cache-regression` (stale cache after publish), and `payload-too-large` (413) — each with
-a regression test and a playbook. The rest have catalog entries and evidence paths. See
+Toggle any incident in `/admin`. Four are fully wired — `serverless-timeout` (504),
+`cache-regression` (stale cache after publish), `payload-too-large` (413), and
+`broken-trace` (orphaned downstream spans) — each with a regression test and a playbook.
+The rest have catalog entries and evidence paths. See
 [`docs/incidents/`](docs/incidents/) and the per-incident table in the admin console.
 
 ## Observability & evidence
