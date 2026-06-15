@@ -38,6 +38,18 @@ Open Jaeger, select service **support-reliability-lab**, and find the request. T
 full ~2.5 s tolerance — exactly the "look at the longest fetch span" step in the
 `trace-debug` skill.
 
+## Verify the pipeline end-to-end
+With the collector up and the app started with the OTLP endpoint, assert that a request
+actually produces a trace in Jaeger:
+```bash
+OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 PORT=3100 npm run start &
+npm run otel:smoke
+```
+`scripts/otel-smoke.mjs` generates traffic, polls the Jaeger API, and exits non-zero if
+no trace for `support-reliability-lab` appears. A passing run reports the captured spans,
+e.g. `middleware GET /`, `GET /`, `resolve page components`. This is a manual/local check
+(it needs the Docker stack) — it is intentionally not part of the CI `quality` gate.
+
 ## Tear down
 ```bash
 docker compose -f infra/otel/docker-compose.yml down

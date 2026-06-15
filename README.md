@@ -73,8 +73,9 @@ docker compose -f infra/otel/docker-compose.yml up -d
 OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 npm run dev
 # Jaeger http://localhost:16686 · Zipkin http://localhost:9411 · Prometheus http://localhost:9090
 ```
-See [docs/observability.md](docs/observability.md) for the full walkthrough; the
-`trace-debug` skill documents the symptom → first-signal mapping.
+See [docs/observability.md](docs/observability.md) for the full walkthrough. `npm run
+otel:smoke` asserts a request actually produces a trace in Jaeger; the `trace-debug` skill
+documents the symptom → first-signal mapping.
 
 ## DNS & domain troubleshooting
 `bash scripts/dns-check.sh <domain>` runs the `dig`/`openssl` checks Vercel's domain
