@@ -92,6 +92,7 @@ support loop: `incident-repro`, `trace-debug`, `dns-triage`, `runbook-writer`.
 | Type-check | `npm run typecheck` |
 | Lint | `npm run lint` |
 | Unit tests | `npm test` |
+| Browser e2e | `npm run test:e2e` (needs `npx playwright install chromium` once) |
 
 ## Open limitations
 - Tenant store is in-memory (documented swap point for Redis/Edge Config).

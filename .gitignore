@@ -17,6 +17,11 @@ next-env.d.ts
 # vercel
 .vercel
 
+# playwright
+/test-results
+/playwright-report
+/playwright/.cache
+
 # misc
 *.log
 .DS_Store

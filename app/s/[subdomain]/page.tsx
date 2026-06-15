@@ -177,7 +177,9 @@ export default async function TenantPage({
 
   const h = await headers();
   const host = h.get("host") ?? "localhost:3000";
-  const proto = host.includes("localhost") ? "http" : "https";
+  // Trust the proxy's protocol when present; otherwise infer (http for local hosts).
+  const isLocalHost = /^(localhost|127\.|0\.0\.0\.0|\[?::1\]?)/.test(host);
+  const proto = h.get("x-forwarded-proto") ?? (isLocalHost ? "http" : "https");
   const origin = `${proto}://${host}`;
 
   // --- serverless-timeout: drive the upstream past the route tolerance ---
