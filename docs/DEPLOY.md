@@ -42,7 +42,12 @@ This project is built to run fully on **Hobby**. What that means in practice:
 - Production + automatic preview deployments (per branch/PR).
 - Custom domains, including a wildcard `*.example.com` — wildcards require the apex on
   **Vercel nameservers** so Vercel can issue the cert (a DNS requirement, not a plan gate).
-- Speed Insights and Web Analytics (free tier — limited data points / retention).
+  After adding the wildcard, set env `ROOT_DOMAIN=your-domain.com` and
+  `TENANT_SUBDOMAIN_LINKS=1`, then redeploy — the "open tenant" links switch from
+  `/s/<sub>` to real `<sub>.your-domain.com` subdomains.
+- **Speed Insights** and **Web Analytics** (free tier — limited data points / retention).
+  Both components are already wired in `app/layout.tsx`; enable them once per project in the
+  dashboard: project → **Observability → Speed Insights → Enable** and **→ Analytics → Enable**.
 - Every incident in the lab — they're self-contained app logic, no paid features.
 
 **Limited on Hobby**

@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { listTenants } from "@/lib/tenants";
 import { getIncident } from "@/lib/incidents";
+import { tenantHref } from "@/lib/tenant-url";
 
 export default async function LandingPage() {
   const tenants = await listTenants();
@@ -38,9 +39,7 @@ export default async function LandingPage() {
                   <td>{t.plan}</td>
                   <td>{incident.title}</td>
                   <td>
-                    <a href={`http://${t.subdomain}.localhost:3000`}>
-                      {t.subdomain}.localhost
-                    </a>
+                    <a href={tenantHref(t.subdomain)}>open</a>
                   </td>
                 </tr>
               );
