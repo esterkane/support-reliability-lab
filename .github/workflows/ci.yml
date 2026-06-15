@@ -35,7 +35,8 @@ jobs:
       - run: npm run build
       - run: npm run test:e2e
 
-  # Wire this up once a preview URL is available (Vercel sets it on the PR).
+  # Self-contained k6 smoke against a local production build. Once a Vercel preview
+  # URL is available, set PREVIEW_URL and point BASE_URL at it instead.
   # Gate production promotion on `quality` via Vercel Deployment Checks.
   performance-smoke:
     if: github.event_name == 'pull_request'
@@ -43,9 +44,22 @@ jobs:
     needs: quality
     steps:
       - uses: actions/checkout@v5
-      - name: Run k6 smoke test
-        uses: grafana/k6-action@v0.3.1
+      - uses: actions/setup-node@v5
         with:
-          filename: perf/smoke.js
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Install k6
+        run: |
+          curl -fsSL https://github.com/grafana/k6/releases/download/v0.54.0/k6-v0.54.0-linux-amd64.tar.gz | tar xz
+          sudo mv k6-v0.54.0-linux-amd64/k6 /usr/local/bin/k6
+      - name: Start app and run k6 smoke
         env:
-          BASE_URL: ${{ secrets.PREVIEW_URL || 'http://127.0.0.1:3000' }}
+          PORT: "3100"
+          BASE_URL: ${{ secrets.PREVIEW_URL || 'http://127.0.0.1:3100' }}
+        run: |
+          npm run start & APP_PID=$!
+          for i in $(seq 1 30); do curl -sf http://127.0.0.1:3100 >/dev/null && break || sleep 1; done
+          k6 run perf/smoke.js
+          kill $APP_PID || true
