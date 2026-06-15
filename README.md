@@ -48,10 +48,10 @@ routing — see [docs/DEPLOY.md](docs/DEPLOY.md).
 | Observability | [`instrumentation.ts`](instrumentation.ts) + Speed Insights |
 
 ## Incident scenarios
-Toggle any incident in `/admin`. Four are fully wired — `serverless-timeout` (504),
-`cache-regression` (stale cache after publish), `payload-too-large` (413), and
-`broken-trace` (orphaned downstream spans) — each with a regression test and a playbook.
-The rest have catalog entries and evidence paths. See
+Toggle any incident in `/admin`. Five are fully wired — `serverless-timeout` (504),
+`cache-regression` (stale cache after publish), `payload-too-large` (413), `broken-trace`
+(orphaned downstream spans), and `invalid-domain` (wildcard-SSL/DNS diagnosis) — each with
+a regression test and a playbook. `wrong-tenant` is guarded by an integration test. See
 [`docs/incidents/`](docs/incidents/) and the per-incident table in the admin console.
 
 ## Observability & evidence

@@ -10,6 +10,7 @@ import {
   generateTraceparent,
   parseTraceparent,
 } from "@/lib/trace";
+import { getDomainDiagnosis } from "@/lib/domain";
 import { UploadDemo } from "./upload-demo";
 
 // On Vercel this bounds the function; locally we enforce the same tolerance with
@@ -164,6 +165,35 @@ async function TracePanel({ origin }: { origin: string }) {
   );
 }
 
+/** Custom-domain configuration view for the invalid-domain incident. */
+function DomainPanel({ subdomain }: { subdomain: string }) {
+  const result = getDomainDiagnosis(subdomain);
+  if (!result) return null;
+  const { domain, diagnosis } = result;
+
+  return (
+    <div className="card">
+      <div className="row">
+        <h3 style={{ marginTop: 0 }}>
+          Domain <code>{domain}</code>
+        </h3>
+        <span className={`badge ${diagnosis.ok ? "ok" : "err"}`}>
+          {diagnosis.state.replace(/-/g, " ")}
+        </span>
+      </div>
+      <p>{diagnosis.summary}</p>
+      <p className="muted">
+        <strong>Fix:</strong> {diagnosis.remediation}
+      </p>
+      <p className="muted" style={{ fontSize: "0.85rem" }}>
+        Confirm the live state with{" "}
+        <code>bash scripts/dns-check.sh {domain.replace("*.", "")}</code> (nameservers,
+        apex/CNAME, _vercel TXT, cert).
+      </p>
+    </div>
+  );
+}
+
 export default async function TenantPage({
   params,
 }: {
@@ -221,6 +251,10 @@ export default async function TenantPage({
       )}
 
       {tenant.incident === "broken-trace" && <TracePanel origin={origin} />}
+
+      {tenant.incident === "invalid-domain" && (
+        <DomainPanel subdomain={tenant.subdomain} />
+      )}
 
       <div className="card">
         <h3 style={{ marginTop: 0 }}>Where to look first</h3>

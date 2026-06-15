@@ -52,7 +52,8 @@ export const INCIDENTS: Record<IncidentKey, Incident> = {
     title: "Invalid custom domain configuration",
     symptom: "Tenant domain shows invalid configuration or missing SSL.",
     evidencePath: "dig output, _vercel TXT state, nameserver + cert inspection.",
-    status: "documented",
+    status: "implemented",
+    doc: "docs/incidents/invalid-domain.md",
   },
   "wrong-tenant": {
     key: "wrong-tenant",

@@ -64,7 +64,7 @@ callers — see `lib/tenants.ts`.
 |---|---|---|
 | `healthy` | `none` | Control. Renders fast, traces clean. |
 | `slow-api` | `serverless-timeout` | Upstream fetch delays past tolerance → 504. **Wired in this pass.** |
-| `broken-domain` | `invalid-domain` | Domain shows invalid config / missing SSL (DNS lab). |
+| `broken-domain` | `invalid-domain` | Domain shows invalid config / missing SSL (DNS lab). **Wired in this pass.** |
 | `stale-cache` | `cache-regression` | Content stays stale / TTFB regresses. |
 | `missing-trace` | `broken-trace` | Request log exists but downstream spans are missing. **Wired in this pass.** |
 | `big-upload` | `payload-too-large` | Uploads over the size limit get a 413. **Wired in this pass.** |
@@ -78,7 +78,7 @@ playbooks live in `docs/incidents/`. The catalog is the source of truth in
 | Incident key | Primary evidence path | Status |
 |---|---|---|
 | `serverless-timeout` | Trace timeline, fetch spans, route `maxDuration`, upstream logs | **Implemented** |
-| `invalid-domain` | `dig`, TXT state, nameserver/cert inspection | Documented (DNS lab) |
+| `invalid-domain` | `dig`, TXT state, nameserver/cert inspection | **Implemented** |
 | `wrong-tenant` | Middleware logs, routing spans, host-header inspection | Guarded by test |
 | `payload-too-large` | Runtime logs, payload size, Blob alternative | **Implemented** |
 | `cache-regression` | `x-vercel-cache`, log cache filters, Speed Insights, k6 | Documented |

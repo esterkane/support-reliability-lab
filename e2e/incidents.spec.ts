@@ -33,6 +33,16 @@ test("broken-trace tenant shows an orphaned downstream span", async ({ page }) =
   await expect(page.getByText("propagated: CONNECTED")).toBeVisible();
 });
 
+test("invalid-domain tenant shows a wildcard-nameservers diagnosis", async ({
+  page,
+}) => {
+  await page.goto("/s/broken-domain");
+  await expect(page.getByText("wildcard needs nameservers")).toBeVisible();
+  await expect(
+    page.getByText(/Move the apex domain to Vercel nameservers/),
+  ).toBeVisible();
+});
+
 test("admin incident console loads with controls", async ({ page }) => {
   await page.goto("/admin");
   await expect(
