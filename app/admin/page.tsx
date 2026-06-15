@@ -2,6 +2,7 @@ import Link from "next/link";
 import { listTenants } from "@/lib/tenants";
 import { listIncidents } from "@/lib/incidents";
 import { getCurrentContent } from "@/lib/content";
+import { tenantHref } from "@/lib/tenant-url";
 import { publishContent, updateIncident } from "./actions";
 
 export const dynamic = "force-dynamic";
@@ -66,7 +67,7 @@ export default async function AdminPage() {
                   </form>
                 </td>
                 <td>
-                  <a href={`http://${t.subdomain}.localhost:3000`}>open</a>
+                  <a href={tenantHref(t.subdomain)}>open</a>
                 </td>
               </tr>
             ))}
