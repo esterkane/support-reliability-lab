@@ -4,6 +4,8 @@ import { getTenant } from "@/lib/tenants";
 import { getIncident } from "@/lib/incidents";
 import { getCurrentContent } from "@/lib/content";
 import { getCached, type CacheStatus } from "@/lib/cache";
+import { PAYLOAD_LIMIT_BYTES } from "@/lib/upload";
+import { UploadDemo } from "./upload-demo";
 
 // On Vercel this bounds the function; locally we enforce the same tolerance with
 // an AbortSignal so the serverless-timeout incident is reproducible everywhere.
@@ -157,6 +159,10 @@ export default async function TenantPage({
           subdomain={tenant.subdomain}
           buggy={tenant.incident === "cache-regression"}
         />
+      )}
+
+      {tenant.incident === "payload-too-large" && (
+        <UploadDemo limitBytes={PAYLOAD_LIMIT_BYTES} />
       )}
 
       <div className="card">

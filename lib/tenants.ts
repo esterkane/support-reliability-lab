@@ -46,6 +46,12 @@ const SEED: Tenant[] = [
     plan: "pro",
     incident: "broken-trace",
   },
+  {
+    subdomain: "big-upload",
+    name: "Big Upload Co",
+    plan: "hobby",
+    incident: "payload-too-large",
+  },
 ];
 
 // Mutable in-memory store. Survives within a single server process (fine for the lab).

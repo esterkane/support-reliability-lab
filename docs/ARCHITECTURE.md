@@ -67,6 +67,7 @@ callers — see `lib/tenants.ts`.
 | `broken-domain` | `invalid-domain` | Domain shows invalid config / missing SSL (DNS lab). |
 | `stale-cache` | `cache-regression` | Content stays stale / TTFB regresses. |
 | `missing-trace` | `broken-trace` | Request log exists but downstream spans are missing. |
+| `big-upload` | `payload-too-large` | Uploads over the size limit get a 413. **Wired in this pass.** |
 
 ## Incident catalog
 
@@ -79,7 +80,7 @@ playbooks live in `docs/incidents/`. The catalog is the source of truth in
 | `serverless-timeout` | Trace timeline, fetch spans, route `maxDuration`, upstream logs | **Implemented** |
 | `invalid-domain` | `dig`, TXT state, nameserver/cert inspection | Documented (DNS lab) |
 | `wrong-tenant` | Middleware logs, routing spans, host-header inspection | Guarded by test |
-| `payload-too-large` | Runtime logs, payload size, Blob alternative | Documented |
+| `payload-too-large` | Runtime logs, payload size, Blob alternative | **Implemented** |
 | `cache-regression` | `x-vercel-cache`, log cache filters, Speed Insights, k6 | Documented |
 | `broken-trace` | `traceparent` propagation, `instrumentation.ts`, drain output | Documented |
 

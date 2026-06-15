@@ -41,8 +41,9 @@ curl -i -H "Host: slow-api.localhost:3000" http://127.0.0.1:3000/
 | Observability | [`instrumentation.ts`](instrumentation.ts) + Speed Insights |
 
 ## Incident scenarios
-Toggle any incident in `/admin`. `serverless-timeout` is fully wired in this pass; the
-rest have catalog entries, evidence paths, and (for several) playbooks. See
+Toggle any incident in `/admin`. Three are fully wired — `serverless-timeout` (504),
+`cache-regression` (stale cache after publish), and `payload-too-large` (413) — each with
+a regression test and a playbook. The rest have catalog entries and evidence paths. See
 [`docs/incidents/`](docs/incidents/) and the per-incident table in the admin console.
 
 ## Observability & evidence

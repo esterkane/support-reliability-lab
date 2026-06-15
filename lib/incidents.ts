@@ -66,7 +66,8 @@ export const INCIDENTS: Record<IncidentKey, Incident> = {
     title: "413 payload too large",
     symptom: "Upload or API request fails above a size threshold.",
     evidencePath: "Runtime logs, captured payload size, Blob alternative path.",
-    status: "documented",
+    status: "implemented",
+    doc: "docs/incidents/payload-too-large.md",
   },
   "cache-regression": {
     key: "cache-regression",
