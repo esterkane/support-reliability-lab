@@ -108,8 +108,10 @@ support loop: `incident-repro`, `trace-debug`, `dns-triage`, `runbook-writer`.
 ## Open limitations
 - Tenant store is in-memory (documented swap point for Redis/Edge Config).
 - External APM (Sentry/Datadog) and log drains are documented, not wired.
-- Some Vercel features are plan-gated (multi-tenant preview URLs, drains, adjustable
-  memory) — noted in `docs/ARCHITECTURE.md` and the local strategy notes.
+- **Runs on the Vercel Hobby plan.** Plan-gated features stay documented-not-wired:
+  Log Drains (Pro+), multi-tenant preview URLs (Enterprise), adjustable function memory
+  (Pro+). Trace inspection is via the local OTel stack, not the Vercel dashboard. See the
+  "Running on the Hobby plan" section in [docs/DEPLOY.md](docs/DEPLOY.md).
 
 ## Tip: reduce permission prompts
 `.claude/settings.json` ships protective `deny` rules only. To let Claude run the dev
