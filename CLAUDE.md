@@ -6,6 +6,18 @@ One deployment serves many tenants via host-based routing; an admin console togg
 deterministic, reproducible, observable, documented incidents. Built as a portfolio
 project for a Vercel Senior Customer Support Engineer role. See `docs/ARCHITECTURE.md`.
 
+## Architecture in 5 lines
+1. One Next.js 15 (App Router) deployment serves many tenants; `middleware.ts` reads the
+   `Host` header, parses the subdomain (`lib/subdomain.ts`), and rewrites to `/s/[subdomain]`.
+2. Tenants and their active incidents live in an in-memory seeded store (`lib/tenants.ts`),
+   driven by the incident catalog source of truth (`lib/incidents.ts`).
+3. `/admin` toggles incidents; faults inject on the tenant path / mock upstream
+   (`app/api/upstream/route.ts`) — deterministically, behind the catalog, never via scattered checks.
+4. Observability is `@vercel/otel` (`instrumentation.ts`) + `@vercel/speed-insights`, with an
+   optional local OTel stack (`infra/otel`) exporting to Jaeger/Zipkin/Prometheus.
+5. No DB or external service is required to run; only Vercel `scripts/*` (domains/DNS) read
+   secrets, and only from env.
+
 ## Stack
 | Layer | Technology |
 |---|---|
@@ -45,8 +57,16 @@ support-reliability-lab/
 | Build | `npm run build` |
 | Type-check | `npm run typecheck` |
 | Lint | `npm run lint` |
-| Unit tests | `npm test` |
+| Unit tests | `npm test` (Vitest, 7 unit/integration test files) |
+| Browser e2e | `npm run test:e2e` (Playwright; `npx playwright install chromium` once) |
+| OTel smoke | `npm run otel:smoke` (asserts a request produces a Jaeger trace) |
 | DNS triage | `bash scripts/dns-check.sh <domain>` |
+
+**Quality gate (CI `.github/workflows/ci.yml`, job `quality`, the required check):**
+runs `npm ci` → `npm run lint` → `npm run typecheck` → `npm test` → `npm run build` on Node 22.
+The `e2e` and `performance-smoke` (k6) jobs run on PRs but are non-blocking. `codeql.yml`
+runs CodeQL (javascript-typescript) on push/PR and weekly. There is no Python; the
+type-checker is `tsc --noEmit` via `npm run typecheck`.
 
 Local multi-tenant testing uses subdomains of `localhost`, e.g.
 `http://slow-api.localhost:3000`. (Chrome/Firefox resolve `*.localhost` automatically;
@@ -92,3 +112,31 @@ Do not mark a task complete until verification status is filled in.
 - Root domain in dev is `localhost:3000`; configured via `ROOT_DOMAIN` env (default `localhost:3000`).
 - The default seed tenants are defined in `lib/tenants.ts`. Do not hardcode tenant lists elsewhere.
 - LLM/agent work, if any, goes through documented APIs; never embed provider keys.
+
+## Invariants I must never break
+1. **Determinism of the incident pipeline.** Every incident is deterministic, reproducible via a
+   single `/admin` toggle, and injected only behind the incident catalog (`lib/incidents.ts`) on
+   the tenant request path / mock upstream — never scattered `if (broken)` checks. (This repo's
+   analog of "planner determinism": the catalog *is* the planner.)
+2. **The quality gate stays green.** `npm run lint`, `npm run typecheck` (`tsc --noEmit`),
+   `npm test`, and `npm run build` must all pass — that is exactly the CI `quality` job.
+   TypeScript stays strict; no `any` without an explanatory comment.
+3. **Provenance / evidence on every incident.** Each incident carries its evidence trail: a catalog
+   entry, a seed tenant, runtime logs/traces via `@vercel/otel`, and a documented playbook under
+   `docs/incidents/<key>.md` with a regression test proving the fix. (This repo's analog of
+   "provenance on every chunk" — there are no RAG chunks; the unit is an incident + its runbook.)
+4. **No secrets in git.** Secrets live in `.env.local` (gitignored); document vars in `.env.example`.
+   `VERCEL_TOKEN` / `VERCEL_TEAM_ID` are read only by `scripts/*`, only from env. `.claude/settings.json`
+   denies reading `.env*`.
+5. **Tenant isolation.** One tenant must never render another tenant's data; host parsing lives only
+   in `middleware.ts` / `lib/subdomain.ts`. The `wrong-tenant` guard is covered by a test — keep it green.
+
+## Definition of done
+- [ ] `npm test` passes (Vitest).
+- [ ] `npm run typecheck` passes (`tsc --noEmit`).
+- [ ] `npm run lint` and `npm run build` pass (completes the CI `quality` gate; CodeQL clean).
+- [ ] If an incident changed/added: catalog entry, seed tenant, traces/logs, `docs/incidents/<key>.md`
+      playbook, and a regression test are all present (provenance/evidence intact).
+- [ ] Tenant isolation preserved; `wrong-tenant` guard test still green.
+- [ ] README / relevant `docs/` updated.
+- [ ] No secrets added; `.env.example` updated if a new env var was introduced.
